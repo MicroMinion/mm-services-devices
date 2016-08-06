@@ -1,0 +1,35 @@
+{
+  "name": "mm-services-devices",
+  "version": "0.0.1",
+  "description": "Device Manager for MicroMinion platform",
+  "main": "index.js",
+  "scripts": {
+    "check-updates": "npm-check",
+    "test": "echo",
+    "2npm": "publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MicroMinion/mm-services-devices.git"
+  },
+  "keywords": [
+    "devices",
+    "sync",
+    "microminion"
+  ],
+  "author": {
+    "name": "Thomas Delaet",
+    "email": "thomas@delaet.org"
+  },
+  "devDependencies": {
+    "publish": "^0.6.0"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MicroMinion/mm-services-devices/issues"
+  },
+  "homepage": "https://github.com/MicroMinion/mm-services-devices#readme",
+  "dependencies": {
+    "lodash": "^4.14.1"
+  }
+}
