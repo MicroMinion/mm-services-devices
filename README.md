@@ -2,7 +2,7 @@
 
 Device Manager for [MicroMinion platform](https://github.com/MicroMinion/mm-platform)
 
-[![CircleCI](https://circleci.com/gh/MicroMinion/mm-services-tenant.svg?style=svg)](https://circleci.com/gh/MicroMinion/mm-services-tenant)
+[![CircleCI](https://circleci.com/gh/MicroMinion/mm-services-devices.svg?style=svg)](https://circleci.com/gh/MicroMinion/mm-services-devices)
 
 ## Initialization
 
