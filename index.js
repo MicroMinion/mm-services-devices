@@ -60,7 +60,7 @@ DevicesManager.prototype.createTenant = function (publicKey, secret) {
 }
 
 DevicesManager.prototype._onCreateReply = function (topic, publicKey, data) {
-  if (_.has(this.ongoingCreateRequests, publicKey) &&
+  if (_.has(this._ongoingCreateRequests, publicKey) &&
     this._ongoingCreateRequests[publicKey].id === data.id) {
     this.addKey(data.publicKey)
   }
@@ -71,7 +71,7 @@ DevicesManager.prototype.getDevices = function () {
 }
 
 DevicesManager.prototype.inScope = function (publicKey) {
-  return _.has(this._devices, publicKey)
+  return _.includes(this._devices, publicKey)
 }
 
 module.exports = DevicesManager
