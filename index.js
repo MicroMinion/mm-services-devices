@@ -33,8 +33,8 @@ DevicesManager.prototype._load = function () {
 }
 
 DevicesManager.prototype._save = function () {
-  this._storage.put('devices', JSON.stringify(this._devices))
-  this.platform.messaging.send('devices.update', 'local', this._devices)
+  this._storage.put('devices', JSON.stringify(this.getDevices()))
+  this.platform.messaging.send('devices.update', 'local', this.getDevices())
 }
 
 DevicesManager.prototype.addKey = function (publicKey, dontSave) {
@@ -67,11 +67,11 @@ DevicesManager.prototype._onCreateReply = function (topic, publicKey, data) {
 }
 
 DevicesManager.prototype.getDevices = function () {
-  return this._devices
+  return _.clone(this._devices)
 }
 
 DevicesManager.prototype.inScope = function (publicKey) {
-  return _.includes(this._devices, publicKey)
+  return _.includes(this.getDevices(), publicKey)
 }
 
 module.exports = DevicesManager
