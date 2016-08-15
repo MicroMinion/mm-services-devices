@@ -14,37 +14,33 @@ var DevicesManager = function (options) {
   this.platform = options.platform
   this._log = options.logger
   this._storage = options.storage
-  this._devices = []
   this._ongoingCreateRequests = {}
   this.platform.messaging.on('public.tenant.createReply', this._onCreateReply.bind(this))
+  this.platform.messaging.on('self.devices.updateRequest', this._update.bind(this))
+  this._update()
+  this._setupSync()
 }
 
-DevicesManager.prototype._load = function () {
+// MEMBERSHIP MANAGEMENT
+
+DevicesManager.prototype._update = function () {
   var self = this
-  this._storage.get('devices', function (err, result) {
-    if (!err) {
-      var devices = JSON.parse(result)
-      _.forEach(devices, function (device) {
-        self.addKey(device, true)
-      })
-      self._save()
-    }
+  this._storage.allDocs().then(function (result) {
+    var devices = _.map(result.rows, function (document) {
+      return document.id
+    })
+    self.platform.messaging.send('devices.update', 'local', devices)
   })
 }
 
-DevicesManager.prototype._save = function () {
-  this._storage.put('devices', JSON.stringify(this.getDevices()))
-  this.platform.messaging.send('devices.update', 'local', this.getDevices())
+DevicesManager.prototype.addKey = function (publicKey, dontSave) {
+  var doc = {
+    '_id': publicKey
+  }
+  this._storage.put(doc)
 }
 
-DevicesManager.prototype.addKey = function (publicKey, dontSave) {
-  if (!this.inScope(publicKey)) {
-    this._devices.push(publicKey)
-  }
-  if (dontSave) {} else {
-    this._save()
-  }
-}
+// TENANT CREATION ON REMOTE NODE
 
 DevicesManager.prototype.createTenant = function (publicKey, secret) {
   var self = this
@@ -66,12 +62,8 @@ DevicesManager.prototype._onCreateReply = function (topic, publicKey, data) {
   }
 }
 
-DevicesManager.prototype.getDevices = function () {
-  return _.clone(this._devices)
-}
+// SYNC LOGIC
 
-DevicesManager.prototype.inScope = function (publicKey) {
-  return _.includes(this.getDevices(), publicKey)
-}
+DevicesManager.prototype._setupSync = function () {}
 
 module.exports = DevicesManager
