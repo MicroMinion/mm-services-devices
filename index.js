@@ -30,14 +30,22 @@ DevicesManager.prototype._update = function () {
       return document.id
     })
     self.platform.messaging.send('devices.update', 'local', devices)
-  })
+  }).catch(function (err) {})
 }
 
 DevicesManager.prototype.addKey = function (publicKey, dontSave) {
+  var self = this
   var doc = {
     '_id': publicKey
   }
   this._storage.put(doc)
+    .then(function (response) {
+      self._update()
+    })
+    .catch(function (err) {
+      self._log.warn('error while adding key ' + publicKey + ' ' + err)
+      self._update()
+    })
 }
 
 // TENANT CREATION ON REMOTE NODE
