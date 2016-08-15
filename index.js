@@ -30,7 +30,7 @@ DevicesManager.prototype._update = function () {
       return document.id
     })
     self.platform.messaging.send('devices.update', 'local', devices)
-  }).catch(function (err) {})
+  })
 }
 
 DevicesManager.prototype.addKey = function (publicKey, dontSave) {
@@ -71,7 +71,47 @@ DevicesManager.prototype._onCreateReply = function (topic, publicKey, data) {
 }
 
 // SYNC LOGIC
+var STATUS_INTERVAL = 60 * 1000
 
-DevicesManager.prototype._setupSync = function () {}
+DevicesManager.prototype._setupSync = function () {
+  this._devices = {}
+  this.platform.messaging.on('self.devices.update', this._updateSyncHosts.bind(this))
+  this.platform.messaging.send('devices.updateRequest', 'local', {})
+  setInterval(this._checkStatus.bind(this), STATUS_INTERVAL)
+  this.platform.messaging.on('self.status.online', this._updateStatus.bind(this))
+  this.platform.messaging.on('self.status.offline', this._updateStatus.bind(this))
+}
+
+DevicesManager.prototype._updateSyncHosts = function (topic, publicKey, data) {
+  var self = this
+  var devices = {}
+  _.forEach(data, function (publicKey) {
+    devices[publicKey] = {}
+    if (_.has(self._devices, publicKey)) {
+      devices[publicKey] = self._devices[publicKey]
+    }
+  })
+  this._devices = devices
+}
+
+DevicesManager.prototype._checkStatus = function () {
+  var self = this
+  _.forEach(_.keys(this._devices), function (publicKey) {
+    self.platform.messaging.send('status.requestStatus', 'local', publicKey)
+  })
+}
+
+DevicesManager.prototype._updateStatus = function (topic, publicKey, data) {
+  if (topic === 'self.status.online') {
+    this._devices[data].online = true
+    this._sync(data)
+  } else if (topic === 'self.status.offline') {
+    this._devices[data].online = false
+  }
+}
+
+DevicesManager.prototype._sync = function (publicKey) {
+  // TODO: Sync PouchDB database with remote publicKey
+}
 
 module.exports = DevicesManager
