@@ -3,6 +3,7 @@
 var _ = require('lodash')
 var assert = require('assert')
 var uuid = require('node-uuid')
+var winstonWrapper = require('winston-meta-wrapper')
 
 var CREATE_TIMEOUT = 1000 * 30
 
@@ -12,7 +13,10 @@ var DevicesManager = function (options) {
   assert(_.isObject(options.storage))
   assert(_.isObject(options.logger))
   this.platform = options.platform
-  this._log = options.logger
+  this._log = winstonWrapper(options.logger)
+  this._log.addMeta({
+    module: 'mm:services:devices'
+  })
   this._storage = options.storage
   this._ongoingCreateRequests = {}
   this.platform.messaging.on('public.tenant.createReply', this._onCreateReply.bind(this))
