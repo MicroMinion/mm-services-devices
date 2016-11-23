@@ -2,7 +2,7 @@
 
 var _ = require('lodash')
 var assert = require('assert')
-var uuid = require('node-uuid')
+var uuid = require('uuid')
 var winstonWrapper = require('winston-meta-wrapper')
 
 var CREATE_TIMEOUT = 1000 * 30
